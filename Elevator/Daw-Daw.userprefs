@@ -1,0 +1,14 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\MainCamScript.cs">
+    <Files>
+      <File FileName="Assets\Scripts\MainCamScript.cs" Line="21" Column="81" />
+      <File FileName="Assets\Scripts\LiftButton.cs" Line="10" Column="18" />
+      <File FileName="Assets\Scripts\Lift.cs" Line="81" Column="2" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
