@@ -22,26 +22,11 @@ public class Test : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if (Vector3.Distance(target[current].transform.position, transform.position) < WPradius)
-        {
-            current++;
-            if (current >= target.Length)
-            {
-                current = 0;
-            }
-        }
-        transform.position = Vector3.MoveTowards(transform.position, target[current].transform.position, Time.deltaTime * speed);
-        OpenLift();
-        StartCoroutine(Delay());
+
     }
 
-    void OpenLift()
+    private void OnTriggerEnter(Collider other)
     {
-        anim.Play("DoorOpen");
-    }
-
-    IEnumerator Delay()
-    {
-        yield return new WaitForSeconds(5);
+          if()
     }
 }
