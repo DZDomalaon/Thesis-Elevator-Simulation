@@ -46,14 +46,13 @@ public class Lift : MonoBehaviour {
 
 			Debug.Log("Player entered");
 		}
-
 	}
 	void OnTriggerStay(Collider coll)
 	{
 		if(coll.gameObject.name.Equals("Player"))
 		{
 			Debug.Log("Player stay");
-			Player.parent= this.transform;
+			Player .parent= this.transform;
 		}
 	}
 	void OnTriggerExit(Collider coll)
@@ -69,7 +68,7 @@ public class Lift : MonoBehaviour {
 	{Debug.Log(" movelift");
 		if (currentFloor==1)
 		{	movementOffset= new Vector3(0.0f,0.1f,0.0f);
-            this.transform.position += new Vector3(0.0f, 0.1f, 0.0f); this.transform.position += new Vector3(0.0f, 0.1f, 0.0f);
+            this.transform.position += new Vector3(0.0f, 0.1f, 0.0f); 
             isLiftMoving =true;
 		}
 		if (currentFloor==2)
