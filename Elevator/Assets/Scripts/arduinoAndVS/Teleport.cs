@@ -6,7 +6,7 @@ using System.IO.Ports;
 public class Teleport : MonoBehaviour
 {
     int[] buttons = new int[2];
-    int current = 0;
+
     public Transform target;
     public static SerialPort sp = new SerialPort("COM7", 9600);
 

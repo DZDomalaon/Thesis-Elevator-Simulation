@@ -61,6 +61,7 @@
      <Compile Include="Assets\DOTween\Modules\DOTweenModuleUnityVersion.cs" />
      <Compile Include="Assets\DOTween\Modules\DOTweenModuleUtils.cs" />
      <Compile Include="Assets\Elevator.cs" />
+     <Compile Include="Assets\Scripts\arduinoAndVS\AutomaticMovement.cs" />
      <Compile Include="Assets\Scripts\arduinoAndVS\Door.cs" />
      <Compile Include="Assets\Scripts\arduinoAndVS\ElevatorScript.cs" />
      <Compile Include="Assets\Scripts\arduinoAndVS\isFull.cs" />

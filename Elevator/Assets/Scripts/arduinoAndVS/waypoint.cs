@@ -8,40 +8,50 @@ public class waypoint : MonoBehaviour {
 
     public GameObject[] waypoints;
     public GameObject elevator; 
-    int current = 1;
     public float speed = 100;
-    int requested;
-    bool isUp = true;
+    //bool isUp = true;
 
 
-    public static SerialPort sp = new SerialPort("COM8", 9600);    
+    private Vector3 startPos;
+    private Vector3 endPos;
+    private float lerpTime = 5;
+    private float currentLerpTime = 0;
+    private bool keyHit;
+
+    //public static SerialPort sp = new SerialPort("COM8", 9600);    
     
     void Start()
     {
-        sp.Open();
-        sp.ReadTimeout = 1;
-       
+        startPos = elevator.transform.position;
+        endPos = elevator.transform.position + Vector3.up * waypoints[4].transform.position.y;
     }
 
 
-    void Update()  
+    void Update()
     {
-        elevator.gameObject.transform.position =  waypoints[3].gameObject.transform.position;
-        Debug.Log(waypoints[3].transform.position);
-        Debug.Log(elevator.transform.position);
-        /*
-        if (Vector3.Distance(waypoints[current].transform.position, transform.position) < WPradius)
-        {
-            current++;
-            if (current >= waypoints.Length)
-            {
-                current = 0;
-            }          
+          if (Input.GetKey(KeyCode.X))
+          {
+                keyHit = true;
+                //requested = sp.ReadByte();
+                if(keyHit==true)
+                {
+                    currentLerpTime += Time.deltaTime;
+                    if(currentLerpTime >= lerpTime)
+                    {
+                        currentLerpTime = lerpTime;
+                    }
+                }
+
+                float Perc = currentLerpTime / lerpTime;
+                
+                if(startPos.y < endPos.y)
+                {
+                    elevator.transform.position = Vector3.Lerp(startPos, endPos, Perc);
+                }
         }
-        transform.position = Vector3.MoveTowards(transform.position, waypoints[current].transform.position, Time.deltaTime * speed);          
-        */
     }
  
+    /*
 
     void moveLift()
     {
@@ -62,16 +72,16 @@ public class waypoint : MonoBehaviour {
                             current++;
                             transform.position = Vector3.MoveTowards(transform.position, waypoints[current].transform.position, Time.deltaTime * speed);
                         }
-                        else if (sp.ReadByte() == 2)
+                        else if (Input.GetKey(KeyCode.X))
                         {
                             
                             current = 1;
 
-                            requested = sp.ReadByte();
-                            while (gameObject.transform.position.y < waypoints[requested].transform.position.y)
+                            //requested = sp.ReadByte();
+                            while (gameObject.transform.position.y < waypoints[2].transform.position.y)
                             {
                                 Debug.Log("2");
-                                transform.position += Vector3.MoveTowards(transform.position, waypoints[requested].transform.position, Time.deltaTime * speed);
+                                transform.position += Vector3.MoveTowards(transform.position, waypoints[2].transform.position, Time.deltaTime * speed);
                             }
                         }
                         else if (sp.ReadByte() == 3)
@@ -100,5 +110,5 @@ public class waypoint : MonoBehaviour {
                 sp.Open();
             }
         }
-    }
+    }*/
 }

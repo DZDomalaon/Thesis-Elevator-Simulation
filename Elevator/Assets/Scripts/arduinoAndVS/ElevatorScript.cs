@@ -7,17 +7,17 @@ public class ElevatorScript : MonoBehaviour
     public bool shouldDoorOpen;
     public bool isFull;
     public bool goingUp;
-    public bool goingDown;
     public Animator doorsOpen;
+    public Transform[] elev;
 
     void StopElevator()
     {
-        // Stop 
+        
     }
 
     void OpenDoors()
     {
-        // Start Open Door Animation
+        
     }
 
     void CloseDoor()
@@ -31,7 +31,6 @@ public class ElevatorScript : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         if(shouldDoorOpen)
@@ -44,7 +43,20 @@ public class ElevatorScript : MonoBehaviour
         // IF() 
     }
 
-    /** Colldi
-     * 
-     * */
+    Transform getNearestElevator(Transform[] elev)
+    {
+        Transform tMin = null;
+        float minDist = Mathf.Infinity;
+        Vector3 current = transform.position;
+        foreach(Transform t in elev)
+        {
+            float dist = Vector3.Distance(t.position, GameObject.Find("Player").transform.position);
+            if(dist < minDist)
+            {
+                tMin = t;
+                minDist = dist;
+            }
+        }
+        return tMin;
+    }
 }

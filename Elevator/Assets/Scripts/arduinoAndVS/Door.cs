@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class Door : MonoBehaviour {
 
-    public int floor;
-    public GameObject elevator;
-    Animator door;
+    //public GameObject elevator;
+    Animator anim;
+    bool doorOpen;
 
     // Use this for initialization
     void Start () {
-        door = GetComponent<Animator>();
+        doorOpen = false;
+        anim = GetComponent<Animator>();
     }
 
     void OnTriggerEnter(Collider other)
@@ -18,13 +19,22 @@ public class Door : MonoBehaviour {
         Debug.Log("Collision occured");
         if (other.gameObject.tag == "Player")
         {
-            //elevator;
-            elevator.GetComponent<ElevatorScript>().shouldDoorOpen = true;
+            doorOpen = true;
+            openDoor("Open");
         }
     }
     
     void OnTriggerExit(Collider other)
     {
-        door.SetInteger("Open", 0);
+        if(doorOpen && other.gameObject.tag == "Player")
+        {
+            doorOpen = false;
+            openDoor("Close");
+        }
+    }
+
+    public void openDoor(string direction)
+    {
+        anim.SetTrigger(direction);
     }
 }
