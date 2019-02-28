@@ -15,10 +15,10 @@ public class Door : MonoBehaviour {
     }
 
     void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("Collision occured");
+    {        
         if (other.gameObject.tag == "Player")
         {
+            Debug.Log("Collision occured");
             doorOpen = true;
             openDoor("Open");
         }

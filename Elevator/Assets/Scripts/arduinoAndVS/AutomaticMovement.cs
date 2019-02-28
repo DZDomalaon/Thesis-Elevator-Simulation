@@ -12,13 +12,12 @@ public class AutomaticMovement : MonoBehaviour
     bool isUp;
     bool isWaitng = false;
     bool isMoving = false;
-    private GameObject objectTest;
 
     void Start()
     {
         rigid = GetComponent<Rigidbody>();
         isUp = true;
-        //current = Random.Range(0, (wp.Length - 2));
+        //StartCoroutine(Wait());
     }
     // Update is called once per frame
     void Update()
@@ -27,7 +26,7 @@ public class AutomaticMovement : MonoBehaviour
         {
             current++;
             Debug.Log(current);
-            if(current == wp.Length)
+            if(current >= wp.Length)
             {
                 current=0;
                 isUp = false;                 
@@ -37,30 +36,18 @@ public class AutomaticMovement : MonoBehaviour
                 isUp = true;
             }
         }
-           
-        if (transform.position.y != wp[current].transform.position.y)
-        {                        
-            transform.position = Vector3.MoveTowards(transform.position, wp[current].transform.position, Time.deltaTime * speed);
-            isMoving = true;
-        }
-        else
-        {
-            isMoving = false;
-        }
-        
-        if(isMoving == false)
-        {
-            StartCoroutine(Wait());
-        }
+        //transform.position = Vector3.MoveTowards(transform.position, wp[current].transform.position, Time.deltaTime * speed);
+        StartCoroutine(Wait());
     }
     
     IEnumerator Wait()
-    {
-        isWaitng = true;
-        Debug.Log("Start to wait");
-        yield return new WaitForSeconds(5);
-        speed = 8;
-        //objectTest.GetComponent<Door>().openDoor("Open");
-        Debug.Log("Waiting Complete");
+    {       
+        foreach (GameObject waypoint in wp)
+        {
+            speed = 0;
+            //transform.position = Vector3.MoveTowards(transform.position, waypoint.transform.position, Time.deltaTime * speed);
+            yield return new WaitForSeconds(5);
+            speed = 8;
+        }
     }
 }
