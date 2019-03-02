@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO.Ports;
 
 public class ElevatorManager : MonoBehaviour
 {
+
     public bool shouldDoorOpen;
     public bool isFull;
-    public bool goingUp;
     public Animator doorsOpen;
 
     bool up;
@@ -59,26 +60,16 @@ public class ElevatorManager : MonoBehaviour
         temp = personFloor - elevators[0].GetComponent<AutomaticMovement>().moveCounter;
         for (int i = 1; i < elevators.Length; i++)
         {
-            if(temp > elevators[i].GetComponent<AutomaticMovement>().moveCounter)
+            if(temp < elevators[i].GetComponent<AutomaticMovement>().moveCounter)
             {
                 temp = Mathf.Abs(elevators[i].GetComponent<AutomaticMovement>().moveCounter - personFloor);
             }
+
+            if(temp >= elevators.Length)
+            {
+                temp = elevators.Length-1;
+            }
         }
         return Mathf.Abs(temp);
-
-        //  int closest = 0;
-        //  float distance = Mathf.Infinity;
-        //  Vector3 position = transform.position;
-        //  foreach (int go in gos)
-        //{
-        //    Vector3 diff = go - position;
-        //    float curDistance = diff.sqrMagnitude;
-        //    if (curDistance < distance)
-        //    {
-        //        closest = go;
-        //        distance = curDistance;
-        //    }
-        //}
-        //return closest;
     }
 }

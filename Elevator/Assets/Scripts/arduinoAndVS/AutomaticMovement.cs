@@ -23,11 +23,13 @@ public class AutomaticMovement : MonoBehaviour
 
     Rigidbody rigid ;
     Door doorScript;
+    ElevatorManager manager;
 
     void Start()
     {
         doorScript = door.GetComponent<Door>();
         rigid = GetComponent<Rigidbody>();
+        manager = GetComponent<ElevatorManager>();
         isUp = true;
         movingTowards = wp[moveCounter];
         full = Random.Range(0,9);
@@ -39,14 +41,13 @@ public class AutomaticMovement : MonoBehaviour
         if (Vector3.Distance(wp[current].transform.position, transform.position) < WPradius)
         {
             current++;
-            Debug.Log(current);
-            if(current == wp.Length)
+            if(current >= wp.Length)
             {
-                current=0;
+                current = 0;
                 isUp = false;
             }
             else if(current == 0)
-            {
+            {                
                 isUp = true;
             }
         }
@@ -61,7 +62,12 @@ public class AutomaticMovement : MonoBehaviour
     {
         Debug.Log("Start waiting");
         isWaitng = true;
-        rigid.velocity = Vector3.zero;
+
+        if(full == 0)
+        {
+            rigid.velocity = Vector3.zero;
+            yield return new WaitForSeconds(7);
+        }
 
         yield return new WaitForSeconds(2);
 
@@ -69,16 +75,19 @@ public class AutomaticMovement : MonoBehaviour
         //Randomize
         if(full == 9)
         {
-            liftCurrent.text = "The lift is full";
+            liftCurrent.text = "Lift passenger #: Full";
+            manager.isFull = true;
+
         }
         else
         {
-            liftCurrent.text = full.ToString();
+            liftCurrent.text = "Lift passenger #: " + full;
         }
         yield return new WaitForSeconds(2);
         doorScript.doorOpen = false;
         yield return new WaitForSeconds(3);
         full = Random.Range(0,9);
+
         if(isUp)
         {
             moveCounter++ ;
@@ -87,15 +96,17 @@ public class AutomaticMovement : MonoBehaviour
         {
             moveCounter--;
 
-            if(moveCounter==0)
+            if (moveCounter == 0)
             {
                 isUp = true;
-            }
+            }         
         }
+
+        
         isMoving = true;
         movingTowards = wp[moveCounter];
 
         StopAllCoroutines();
-        Debug.Log("Waiting Complete");        
+        Debug.Log("Waiting Complete");
     }
 }
