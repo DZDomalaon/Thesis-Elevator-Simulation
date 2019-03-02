@@ -4,59 +4,33 @@ using UnityEngine;
 
 public class ElevatorScript : MonoBehaviour
 {
+    public GameObject[] wp;
     public bool shouldDoorOpen;
     public bool isFull;
     public bool goingUp;
     public Animator doorsOpen;
-    public Transform[] elev;
 
-    void StopElevator()
-    {
-        
-    }
+    bool up;
 
-    void OpenDoors()
-    {
-        
-    }
+    float speed = 8;
 
-    void CloseDoor()
-    {
-        // Start Close door aniation
-    }
+    // false is down, true is up
 
     void Start()
     {
-        //sdoorOpen = GetComponent<Animator>();
-
+         up = GetComponent<AutomaticMovement>().isUp;
     }
-
     void Update()
     {
-        if(shouldDoorOpen)
-        {
-            doorsOpen.SetBool("Open", true);
-        }
     }
     void OnCollisionEnter(Collision col)
     {
-        // IF() 
+        // IF()
     }
 
-    Transform getNearestElevator(Transform[] elev)
-    {
-        Transform tMin = null;
-        float minDist = Mathf.Infinity;
-        Vector3 current = transform.position;
-        foreach(Transform t in elev)
-        {
-            float dist = Vector3.Distance(t.position, GameObject.Find("Player").transform.position);
-            if(dist < minDist)
-            {
-                tMin = t;
-                minDist = dist;
-            }
-        }
-        return tMin;
-    }
+    // Transform getNearestElevator(Transform[] elev)
+    // {
+    //     // float dist = Vector3.Distance(t.position, GameObject.Find("Player").transform.position);
+    //
+    // }
 }

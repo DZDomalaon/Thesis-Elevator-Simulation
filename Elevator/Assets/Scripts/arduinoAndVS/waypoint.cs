@@ -23,7 +23,7 @@ public class waypoint : MonoBehaviour {
     void Start()
     {
         startPos = elevator.transform.position;
-        endPos = elevator.transform.position + Vector3.up * waypoints[4].transform.position.y;
+        endPos = elevator.transform.position + Vector3.up * waypoints[1].transform.position.y;
     }
 
 
@@ -48,67 +48,6 @@ public class waypoint : MonoBehaviour {
                 {
                     elevator.transform.position = Vector3.Lerp(startPos, endPos, Perc);
                 }
-        }
+          }
     }
- 
-    /*
-
-    void moveLift()
-    {
-        if (sp != null)
-        {
-            if (sp.IsOpen)
-            {
-                try
-                {
-                    if (current == waypoints.Length)
-                    {
-                        current = current + waypoints.Length;
-                    }
-                    else
-                    {
-                        if (sp.ReadByte() == 1)
-                        {
-                            current++;
-                            transform.position = Vector3.MoveTowards(transform.position, waypoints[current].transform.position, Time.deltaTime * speed);
-                        }
-                        else if (Input.GetKey(KeyCode.X))
-                        {
-                            
-                            current = 1;
-
-                            //requested = sp.ReadByte();
-                            while (gameObject.transform.position.y < waypoints[2].transform.position.y)
-                            {
-                                Debug.Log("2");
-                                transform.position += Vector3.MoveTowards(transform.position, waypoints[2].transform.position, Time.deltaTime * speed);
-                            }
-                        }
-                        else if (sp.ReadByte() == 3)
-                        {
-                            current++;
-                            transform.position = Vector3.MoveTowards(transform.position, waypoints[current].transform.position, Time.deltaTime * speed);
-                        }
-                        else if (sp.ReadByte() == 4)
-                        {
-                            current++;
-                            transform.position = Vector3.MoveTowards(transform.position, waypoints[current].transform.position, Time.deltaTime * speed);
-                        }
-                        else
-                        {
-                            current++;
-                            transform.position = Vector3.MoveTowards(transform.position, waypoints[current].transform.position, Time.deltaTime * speed);
-                        }
-                    }
-                }
-                catch (System.Exception)
-                {
-                }
-            }
-            else
-            {
-                sp.Open();
-            }
-        }
-    }*/
 }

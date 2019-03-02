@@ -1,40 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine; 
+using UnityEngine;
 
 public class Door : MonoBehaviour {
 
     //public GameObject elevator;
     Animator anim;
-    bool doorOpen;
+    public bool doorOpen;
 
     // Use this for initialization
     void Start () {
         doorOpen = false;
         anim = GetComponent<Animator>();
     }
-
-    void OnTriggerEnter(Collider other)
-    {        
-        if (other.gameObject.tag == "Player")
+    void Update(){
+        if(doorOpen)
         {
-            Debug.Log("Collision occured");
-            doorOpen = true;
-            openDoor("Open");
+            anim.SetTrigger("Open");
         }
-    }
-    
-    void OnTriggerExit(Collider other)
-    {
-        if(doorOpen && other.gameObject.tag == "Player")
+        else if(!doorOpen)
         {
-            doorOpen = false;
-            openDoor("Close");
+            anim.SetTrigger("Close");
         }
     }
 
-    public void openDoor(string direction)
-    {
-        anim.SetTrigger(direction);
-    }
 }
