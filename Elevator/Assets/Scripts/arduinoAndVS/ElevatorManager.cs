@@ -5,8 +5,8 @@ using System.IO.Ports;
 
 public class ElevatorManager : MonoBehaviour
 {
-    SerialPort stream = new SerialPort("COM7", 9600);
-    //SerialPort stream2 = new SerialPort("COM19", 9600);
+    //SerialPort stream = new SerialPort("COM7", 9600);
+    SerialPort stream2 = new SerialPort("COM2", 9600, Parity.None, 8, StopBits.One);
 
     public bool shouldDoorOpen;
     public bool isFull;
@@ -19,7 +19,7 @@ public class ElevatorManager : MonoBehaviour
     public bool personDelivered = false;
     public int personRequestFloor;
 
-    public bool personRequestDirection = true;    
+    public int personRequestDirection;   
     public GameObject[] elevators;       
 
     int temp;
@@ -29,15 +29,15 @@ public class ElevatorManager : MonoBehaviour
 
     void Start()
     {
-        stream.Open();
-        stream.ReadTimeout = 1;
+        stream2.Open();
+        stream2.ReadTimeout = 25;
     }
 
     void Update()
     {
-        if(stream != null)
+        if(stream2 != null)
         {
-            if(stream.IsOpen)
+            if(stream2.IsOpen)
             {
                 personFloor = GameObject.FindWithTag("Player").GetComponent<PlayerScript>().currentFloor;
 
@@ -58,11 +58,11 @@ public class ElevatorManager : MonoBehaviour
                 }
                 if (Input.GetKey(KeyCode.UpArrow))
                 {
-                    personRequestDirection = true;
+                    personRequestDirection = 1;
                 }
                 if (Input.GetKey(KeyCode.DownArrow))
                 {
-                    personRequestDirection = false;
+                    personRequestDirection = 0;
                 }
 
                 try
@@ -70,70 +70,70 @@ public class ElevatorManager : MonoBehaviour
                     Debug.Log("random");
 
                     ////Data to Arduino (inside)
-                    //if (chosen.current == 1 && chosen.isUp == 1)
-                    //{
-                    //    stream2.Write("a");
-                    //}
-                    //if (chosen.current == 2 && chosen.isUp == 1)
-                    //{
-                    //    stream2.Write("b");
-                    //}
-                    //if (chosen.current == 2 && chosen.isUp == 2)
-                    //{
-                    //    stream2.Write("c");
-                    //}
-                    //if (chosen.current == 3 && chosen.isUp == 1)
-                    //{
-                    //    stream2.Write("d");
-                    //}
-                    //if (chosen.current == 3 && chosen.isUp == 2)
-                    //{
-                    //    stream2.Write("e");
-                    //}
-                    //if (chosen.current == 4 && chosen.isUp == 1)
-                    //{
-                    //    stream2.Write("f");
-                    //}
-                    //if (chosen.current == 4 && chosen.isUp == 2)
-                    //{
-                    //    stream2.Write("g");
-                    //}
-                    //if (chosen.current == 5 && chosen.isUp == 2)
-                    //{
-                    //    stream2.Write("h");
-                    //}
+                    if (chosen.current == 1 && chosen.isUp == 1)
+                    {
+                        stream2.Write("a");
+                    }
+                    if (chosen.current == 2 && chosen.isUp == 1)
+                    {
+                        stream2.Write("b");
+                    }
+                    if (chosen.current == 2 && chosen.isUp == 2)
+                    {
+                        stream2.Write("c");
+                    }
+                    if (chosen.current == 3 && chosen.isUp == 1)
+                    {
+                        stream2.Write("d");
+                    }
+                    if (chosen.current == 3 && chosen.isUp == 2)
+                    {
+                        stream2.Write("e");
+                    }
+                    if (chosen.current == 4 && chosen.isUp == 1)
+                    {
+                        stream2.Write("f");
+                    }
+                    if (chosen.current == 4 && chosen.isUp == 2)
+                    {
+                        stream2.Write("g");
+                    }
+                    if (chosen.current == 5 && chosen.isUp == 2)
+                    {
+                        stream2.Write("h");
+                    }
 
                     ////Data from Arduino (inside)
-                    string value = stream.ReadLine();
-                    if (value == "12")
-                    {
-                        data = 12;
-                        Debug.Log("UPDOWN");
-                    }
-                    if (value == "1")
-                    {
-                        data = 1;
-                        Debug.Log("UP");
-                    }
-                    if (value == "2")
-                    {
-                        data = 2;
-                        Debug.Log("DOWN");
-                    }
+                    //string value = stream.ReadLine();
+                    //if (value == "12")
+                    //{
+                    //    data = 12;
+                    //    Debug.Log("UPDOWN");
+                    //}
+                    //if (value == "1")
+                    //{
+                    //    data = 1;
+                    //    Debug.Log("UP");
+                    //}
+                    //if (value == "2")
+                    //{
+                    //    data = 2;
+                    //    Debug.Log("DOWN");
+                    //}
 
                     ////Data from Arduino (outside)
                     //string value2 = stream2.ReadLine();
-                    //if (value2 == "Emergency!")
+                    //if (value2 == "!")
                     //{
-                    //    data2 = 0;
+                    //    data = 0;
                     //}
-                    //if (value2 == "OPEN")
+                    //if (value2 == "<")
                     //{
-                    //    data2 = 1;
+                    //    data = 1;
                     //}
-                    //if (value2 == "CLOSE")
+                    //if (value2 == ">")
                     //{
-                    //    data2 = 2;
+                    //    data = 2;
                     //}
                 }
                 catch (System.Exception)

@@ -17,7 +17,7 @@ public class AutomaticMovement : MonoBehaviour
     int full = 0;
     float speed = 8;
     float WPradius = 1;
-    public bool isUp;
+    public int isUp;
     //bool isWaitng = false;
     bool isMoving = true;
 
@@ -30,7 +30,7 @@ public class AutomaticMovement : MonoBehaviour
         doorScript = door.GetComponent<Door>();
         rigid = GetComponent<Rigidbody>();
         manager = GetComponent<ElevatorManager>();
-        isUp = true;
+        isUp = 1;
         movingTowards = wp[moveCounter];
         full = Random.Range(0,9);
         //current = Random.Range(0, (wp.Length - 2));
@@ -44,11 +44,11 @@ public class AutomaticMovement : MonoBehaviour
             if(current >= wp.Length)
             {
                 current = 0;
-                isUp = false;
+                isUp = 0;
             }
             else if(current == 0)
             {                
-                isUp = true;
+                isUp = 1;
             }
         }
 
@@ -88,17 +88,17 @@ public class AutomaticMovement : MonoBehaviour
         yield return new WaitForSeconds(3);
         full = Random.Range(0,9);
 
-        if(isUp)
+        if(isUp == 1)
         {
             moveCounter++ ;
         }
-        else if(!isUp)
+        else if(isUp == 0)
         {
             moveCounter--;
 
             if (moveCounter == 0)
             {
-                isUp = true;
+                isUp = 1;
             }         
         }
 
