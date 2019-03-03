@@ -18,7 +18,7 @@ public class ElevatorScript : MonoBehaviour
 
     void Start()
     {
-         up = GetComponent<AutomaticMovement>().isUp;
+       //  up = GetComponent<AutomaticMovement>().isUp;
     }
     void Update()
     {

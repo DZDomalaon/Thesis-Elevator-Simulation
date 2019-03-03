@@ -5,12 +5,12 @@ using System.IO.Ports;
 
 public class ElevatorManager : MonoBehaviour
 {
+    SerialPort stream = new SerialPort("COM7", 9600);
+    //SerialPort stream2 = new SerialPort("COM19", 9600);
 
     public bool shouldDoorOpen;
     public bool isFull;
     public Animator doorsOpen;
-
-    bool up;
 
     float speed = 8;
 
@@ -19,41 +19,131 @@ public class ElevatorManager : MonoBehaviour
     public bool personDelivered = false;
     public int personRequestFloor;
 
-    public bool personRequestDirection = false;    
+    public bool personRequestDirection = true;    
     public GameObject[] elevators;       
 
-    float minPosition;
     int temp;
-    int counter;
+    int[] requestedFloors;
 
-    void Update(){
+    int data;
 
-        personFloor = GameObject.FindWithTag("Player").GetComponent<PlayerScript>().currentFloor;
-
-        Debug.Log("NEAREST" + GetNearestElevator(personFloor));
-        GameObject chosenElevator = elevators[GetNearestElevator(personFloor)];
-        AutomaticMovement chosen = chosenElevator.GetComponent<AutomaticMovement>();
-
-        if(personRequest && !isFull && personRequestDirection == up) {
-            chosen.enabled = false;
-
-            chosenElevator.transform.position = Vector3.MoveTowards(chosenElevator.transform.position, chosen.wp[personFloor - 1].transform.position, Time.deltaTime * speed);
-        }
-        if(personDelivered) GetComponent<AutomaticMovement>().enabled = true;
-
-        if(Input.GetKey("x"))
-        {
-            personRequest = !personRequest;
-        }
-        if(Input.GetKey(KeyCode.UpArrow))
-        {
-            personRequestDirection = true;
-        }
-        if(Input.GetKey(KeyCode.DownArrow))
-        {
-            personRequestDirection = false;
-        }
+    void Start()
+    {
+        stream.Open();
+        stream.ReadTimeout = 1;
     }
+
+    void Update()
+    {
+        if(stream != null)
+        {
+            if(stream.IsOpen)
+            {
+                personFloor = GameObject.FindWithTag("Player").GetComponent<PlayerScript>().currentFloor;
+
+                GameObject chosenElevator = elevators[GetNearestElevator(personFloor)];
+                AutomaticMovement chosen = chosenElevator.GetComponent<AutomaticMovement>();
+
+                if (personRequest && !isFull && personRequestDirection == chosen.isUp)
+                {
+                    chosen.enabled = false;
+
+                    chosenElevator.transform.position = Vector3.MoveTowards(chosenElevator.transform.position, chosen.wp[personFloor - 1].transform.position, Time.deltaTime * speed);
+                }
+                if (personDelivered) GetComponent<AutomaticMovement>().enabled = true;
+
+                if (Input.GetKey("x"))
+                {
+                    personRequest = !personRequest;
+                }
+                if (Input.GetKey(KeyCode.UpArrow))
+                {
+                    personRequestDirection = true;
+                }
+                if (Input.GetKey(KeyCode.DownArrow))
+                {
+                    personRequestDirection = false;
+                }
+
+                try
+                {
+                    Debug.Log("random");
+
+                    ////Data to Arduino (inside)
+                    //if (chosen.current == 1 && chosen.isUp == 1)
+                    //{
+                    //    stream2.Write("a");
+                    //}
+                    //if (chosen.current == 2 && chosen.isUp == 1)
+                    //{
+                    //    stream2.Write("b");
+                    //}
+                    //if (chosen.current == 2 && chosen.isUp == 2)
+                    //{
+                    //    stream2.Write("c");
+                    //}
+                    //if (chosen.current == 3 && chosen.isUp == 1)
+                    //{
+                    //    stream2.Write("d");
+                    //}
+                    //if (chosen.current == 3 && chosen.isUp == 2)
+                    //{
+                    //    stream2.Write("e");
+                    //}
+                    //if (chosen.current == 4 && chosen.isUp == 1)
+                    //{
+                    //    stream2.Write("f");
+                    //}
+                    //if (chosen.current == 4 && chosen.isUp == 2)
+                    //{
+                    //    stream2.Write("g");
+                    //}
+                    //if (chosen.current == 5 && chosen.isUp == 2)
+                    //{
+                    //    stream2.Write("h");
+                    //}
+
+                    ////Data from Arduino (inside)
+                    string value = stream.ReadLine();
+                    if (value == "12")
+                    {
+                        data = 12;
+                        Debug.Log("UPDOWN");
+                    }
+                    if (value == "1")
+                    {
+                        data = 1;
+                        Debug.Log("UP");
+                    }
+                    if (value == "2")
+                    {
+                        data = 2;
+                        Debug.Log("DOWN");
+                    }
+
+                    ////Data from Arduino (outside)
+                    //string value2 = stream2.ReadLine();
+                    //if (value2 == "Emergency!")
+                    //{
+                    //    data2 = 0;
+                    //}
+                    //if (value2 == "OPEN")
+                    //{
+                    //    data2 = 1;
+                    //}
+                    //if (value2 == "CLOSE")
+                    //{
+                    //    data2 = 2;
+                    //}
+                }
+                catch (System.Exception)
+                {
+                    Debug.Log("Error");
+                }
+            }
+        }        
+    }
+
     int GetNearestElevator(int personFloor)
     {
         //TODO: Compare floors each elevator. PersonFloor -ElevatorFloor . Abs(). Assume lowest value is nearestElevator.        

@@ -18,7 +18,7 @@ public class AutomaticMovement : MonoBehaviour
     float speed = 8;
     float WPradius = 1;
     public bool isUp;
-    bool isWaitng = false;
+    //bool isWaitng = false;
     bool isMoving = true;
 
     Rigidbody rigid ;
@@ -60,8 +60,8 @@ public class AutomaticMovement : MonoBehaviour
 
     public IEnumerator Wait()
     {
-        Debug.Log("Start waiting");
-        isWaitng = true;
+        //Debug.Log("Start waiting");
+        //isWaitng = true;
 
         if(full == 0)
         {
@@ -107,6 +107,6 @@ public class AutomaticMovement : MonoBehaviour
         movingTowards = wp[moveCounter];
 
         StopAllCoroutines();
-        Debug.Log("Waiting Complete");
+        //Debug.Log("Waiting Complete");
     }
 }
