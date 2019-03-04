@@ -70,6 +70,7 @@ public class ElevatorManager : MonoBehaviour
                     Debug.Log("random");
 
                     ////Data to Arduino (inside)
+                    Debug.Log(stream2.ReadLine());
                     if (chosen.current == 1 && chosen.isUp == 1)
                     {
                         stream2.Write("a");

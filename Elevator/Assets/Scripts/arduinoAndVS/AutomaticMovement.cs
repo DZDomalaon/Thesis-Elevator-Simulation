@@ -65,15 +65,21 @@ public class AutomaticMovement : MonoBehaviour
 
         if(full == 0)
         {
-            rigid.velocity = Vector3.zero;
+            transform.position = Vector3.MoveTowards(transform.position, movingTowards.transform.position, Time.deltaTime * speed);
             yield return new WaitForSeconds(7);
         }
 
         yield return new WaitForSeconds(2);
+        if(isMoving)
+        {
+            doorScript.doorOpen = false;
+            doorScript.doorOpen = true;
+        }
 
-        doorScript.doorOpen = true;
+        // doorScript.doorOpen = true;
         //Randomize
-        if(full == 9)
+        yield return new WaitForSeconds(3);
+        if (full == 9)
         {
             liftCurrent.text = "Lift passenger #: Full";
             manager.isFull = true;
@@ -83,10 +89,8 @@ public class AutomaticMovement : MonoBehaviour
         {
             liftCurrent.text = "Lift passenger #: " + full;
         }
-        yield return new WaitForSeconds(2);
-        doorScript.doorOpen = false;
         yield return new WaitForSeconds(3);
-        full = Random.Range(0,9);
+        full = Random.Range(0,9); 
 
         if(isUp == 1)
         {
