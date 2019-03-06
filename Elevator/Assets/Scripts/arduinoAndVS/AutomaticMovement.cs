@@ -18,22 +18,19 @@ public class AutomaticMovement : MonoBehaviour
     float speed = 8;
     float WPradius = 1;
     public int isUp;
-    //bool isWaitng = false;
-    bool isMoving = true;
+    public bool isMoving = true;
+    bool isOpen = true;
 
-    Rigidbody rigid ;
     Door doorScript;
     ElevatorManager manager;
 
     void Start()
     {
-        doorScript = door.GetComponent<Door>();
-        rigid = GetComponent<Rigidbody>();
+        doorScript = door.GetComponent<Door>();        
         manager = GetComponent<ElevatorManager>();
         isUp = 1;
         movingTowards = wp[moveCounter];
-        full = Random.Range(0,9);
-        //current = Random.Range(0, (wp.Length - 2));
+        full = Random.Range(0,9);        
     }
     // Update is called once per frame
     void Update()
@@ -52,33 +49,36 @@ public class AutomaticMovement : MonoBehaviour
             }
         }
 
-        if(isMoving){
+        if(isMoving)
+        {
             transform.position = Vector3.MoveTowards(transform.position, movingTowards.transform.position, Time.deltaTime * speed);
-            StartCoroutine(Wait());
+            StartCoroutine(Wait());           
+        }
+        else if(!isMoving)
+        {
+            if(isOpen)
+            {
+                DoorOpen();
+            }            
         }
     }
 
     public IEnumerator Wait()
     {
-        //Debug.Log("Start waiting");
-        //isWaitng = true;
-
         if(full == 0)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, movingTowards.transform.position, Time.deltaTime * speed);
+        {            
             yield return new WaitForSeconds(7);
+            doorScript.doorOpen = 3;
         }
 
         yield return new WaitForSeconds(2);
         if(isMoving)
         {
-            doorScript.doorOpen = false;
-            doorScript.doorOpen = true;
+            doorScript.doorOpen = 3;
         }
 
-        // doorScript.doorOpen = true;
         //Randomize
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(2);
         if (full == 9)
         {
             liftCurrent.text = "Lift passenger #: Full";
@@ -89,28 +89,33 @@ public class AutomaticMovement : MonoBehaviour
         {
             liftCurrent.text = "Lift passenger #: " + full;
         }
-        yield return new WaitForSeconds(3);
-        full = Random.Range(0,9); 
 
-        if(isUp == 1)
+        yield return new WaitForSeconds(2);
+        full = Random.Range(0,9);
+
+        if (isUp == 1)
         {
-            moveCounter++ ;
+            moveCounter++;
         }
-        else if(isUp == 0)
+        else if (isUp == 0)
         {
             moveCounter--;
 
             if (moveCounter == 0)
             {
                 isUp = 1;
-            }         
+            }
         }
 
-        
         isMoving = true;
         movingTowards = wp[moveCounter];
 
-        StopAllCoroutines();
-        //Debug.Log("Waiting Complete");
+        StopAllCoroutines();            
+    }
+
+    public IEnumerator DoorOpen()
+    {
+        doorScript.doorOpen = 1;        
+        yield return new WaitForSeconds(4);
     }
 }
