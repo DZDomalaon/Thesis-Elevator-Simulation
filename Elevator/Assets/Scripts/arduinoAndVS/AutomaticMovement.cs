@@ -223,8 +223,12 @@ public class AutomaticMovement : MonoBehaviour
         }
         Debug.Log(moveCounter);
         movingTowards = wp[moveCounter];
+
+
         yield return new WaitForSeconds(2);
     }
+
+
     IEnumerator WaitForTime(int s){
         yield return new WaitForSeconds(s);
         StartCoroutine(DeliverPassengersUntilEmpty());
