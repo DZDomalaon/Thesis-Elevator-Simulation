@@ -96,6 +96,7 @@ public class AutomaticMovement : MonoBehaviour
         GenerateRandomFloors();
         StopAllCoroutines();
     }
+
     public IEnumerator Wait()
     {
         if(passengers == 0)
@@ -116,7 +117,7 @@ public class AutomaticMovement : MonoBehaviour
         {
             liftCurrent.text = "Lift passenger #: Full";
             // manager.isFull = true;
-            isFull = true;
+            isFull =     true;
         }
         else if (passengers > 9)
         {

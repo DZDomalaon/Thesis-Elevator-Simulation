@@ -5,8 +5,8 @@ using System.IO.Ports;
 
 public class ElevatorManager : MonoBehaviour
 {
-    //SerialPort stream = new SerialPort("COM7", 9600);
-    SerialPort stream2 = new SerialPort("COM2", 9600, Parity.None, 8, StopBits.One);
+    SerialPort stream = new SerialPort("COM7", 9600);
+    //SerialPort stream2 = new SerialPort("COM2", 9600, Parity.None, 8, StopBits.One);
 
     public bool shouldDoorOpen;
     public bool isFull;
@@ -29,17 +29,18 @@ public class ElevatorManager : MonoBehaviour
 
     void Start()
     {
-        stream2.Open();
-        stream2.ReadTimeout = 25;
+        stream.Open();
+        stream.ReadTimeout = 25;
     }
 
     void Update()
     {
-        if(stream2 != null)
+        if(stream != null)
         {
-            if(stream2.IsOpen)
+            if(stream.IsOpen)
             {
                 personFloor = GameObject.FindWithTag("Player").GetComponent<PlayerScript>().currentFloor;
+                stream.Write(personFloor.ToString());
 
                 GameObject chosenElevator = elevators[GetNearestElevator(personFloor)];
                 AutomaticMovement chosen = chosenElevator.GetComponent<AutomaticMovement>();
@@ -70,39 +71,39 @@ public class ElevatorManager : MonoBehaviour
                     Debug.Log("random");
 
                     ////Data to Arduino (inside)
-                    Debug.Log(stream2.ReadLine());
-                    if (chosen.current == 1 && chosen.isUp == 1)
-                    {
-                        stream2.Write("a");
-                    }
-                    if (chosen.current == 2 && chosen.isUp == 1)
-                    {
-                        stream2.Write("b");
-                    }
-                    if (chosen.current == 2 && chosen.isUp == 2)
-                    {
-                        stream2.Write("c");
-                    }
-                    if (chosen.current == 3 && chosen.isUp == 1)
-                    {
-                        stream2.Write("d");
-                    }
-                    if (chosen.current == 3 && chosen.isUp == 2)
-                    {
-                        stream2.Write("e");
-                    }
-                    if (chosen.current == 4 && chosen.isUp == 1)
-                    {
-                        stream2.Write("f");
-                    }
-                    if (chosen.current == 4 && chosen.isUp == 2)
-                    {
-                        stream2.Write("g");
-                    }
-                    if (chosen.current == 5 && chosen.isUp == 2)
-                    {
-                        stream2.Write("h");
-                    }
+                    //Debug.Log(stream2.ReadLine());
+                    //if (chosen.current == 1 && chosen.isUp == 1)
+                    //{
+                    //    stream2.Write("a");
+                    //}
+                    //if (chosen.current == 2 && chosen.isUp == 1)
+                    //{
+                    //    stream2.Write("b");
+                    //}
+                    //if (chosen.current == 2 && chosen.isUp == 2)
+                    //{
+                    //    stream2.Write("c");
+                    //}
+                    //if (chosen.current == 3 && chosen.isUp == 1)
+                    //{
+                    //    stream2.Write("d");
+                    //}
+                    //if (chosen.current == 3 && chosen.isUp == 2)
+                    //{
+                    //    stream2.Write("e");
+                    //}
+                    //if (chosen.current == 4 && chosen.isUp == 1)
+                    //{
+                    //    stream2.Write("f");
+                    //}
+                    //if (chosen.current == 4 && chosen.isUp == 2)
+                    //{
+                    //    stream2.Write("g");
+                    //}
+                    //if (chosen.current == 5 && chosen.isUp == 2)
+                    //{
+                    //    stream2.Write("h");
+                    //}
 
                     ////Data from Arduino (inside)
                     //string value = stream.ReadLine();
@@ -122,20 +123,22 @@ public class ElevatorManager : MonoBehaviour
                     //    Debug.Log("DOWN");
                     //}
 
-                    ////Data from Arduino (outside)
-                    //string value2 = stream2.ReadLine();
-                    //if (value2 == "!")
-                    //{
-                    //    data = 0;
-                    //}
-                    //if (value2 == "<")
-                    //{
-                    //    data = 1;
-                    //}
-                    //if (value2 == ">")
-                    //{
-                    //    data = 2;
-                    //}
+                    //Data from Arduino (outside)
+                    string value2 = stream.ReadLine();
+                    if (value2 == "!")  
+                    {
+                        data = 0;
+                    }
+                    if (value2 == "<")
+                    {
+                        data = 1;
+                        stream.Write(data.ToString()); 
+                    }
+                    if (value2 == ">")
+                    {
+                        data = 2;
+                        stream.Write(data.ToString());
+                    }
                 }
                 catch (System.Exception)
                 {

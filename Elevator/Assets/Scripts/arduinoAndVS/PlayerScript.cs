@@ -5,9 +5,12 @@ using UnityEngine;
 public class PlayerScript : MonoBehaviour
 {
     public int currentFloor = 0;
-    void OnCollisionEnter(Collision col){
+    
+    void OnCollisionEnter(Collision col)
+    {
         Debug.Log("Collided with Object:" + col.gameObject.name);
-        switch(col.gameObject.name){
+        switch(col.gameObject.name)
+        {
             case "Floor1":
                 currentFloor = 1;
                 break;
