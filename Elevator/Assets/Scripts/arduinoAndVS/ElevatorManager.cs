@@ -5,12 +5,13 @@ using System.IO.Ports;
 
 public class ElevatorManager : MonoBehaviour
 {
-    SerialPort stream = new SerialPort("COM7", 9600);
+    SerialPort stream = new SerialPort("COM5", 9600);
     //SerialPort stream2 = new SerialPort("COM2", 9600, Parity.None, 8, StopBits.One);
 
     public bool shouldDoorOpen;
     public bool isFull;
-    public Animator doorsOpen;
+    public GameObject chosenElevator;
+    public bool doneRequesting = false;
 
     float speed = 8;
 
@@ -22,7 +23,6 @@ public class ElevatorManager : MonoBehaviour
     public int personRequestDirection;   
     public GameObject[] elevators;       
 
-    int temp;
     int[] requestedFloors;
 
     int data;
@@ -35,40 +35,60 @@ public class ElevatorManager : MonoBehaviour
 
     void Update()
     {
-        if(stream != null)
-        {
-            if(stream.IsOpen)
-            {
+        // if(stream != null)
+        // {
+        //     if(stream.IsOpen)
+        //     {
                 personFloor = GameObject.FindWithTag("Player").GetComponent<PlayerScript>().currentFloor;
                 stream.Write(personFloor.ToString());
-
-                GameObject chosenElevator = elevators[GetNearestElevator(personFloor)];
-                AutomaticMovement chosen = chosenElevator.GetComponent<AutomaticMovement>();
-
-                if (personRequest && !isFull && personRequestDirection == chosen.isUp)
-                {
-                    chosen.enabled = false;
-
-                    chosenElevator.transform.position = Vector3.MoveTowards(chosenElevator.transform.position, chosen.wp[personFloor - 1].transform.position, Time.deltaTime * speed);
+                
+                if(chosenElevator){
+                    chosenElevator.transform.position = Vector3.MoveTowards(chosenElevator.transform.position, chosenElevator.GetComponent<AutomaticMovement>().wp[personFloor - 1].transform.position, Time.deltaTime * speed);
+                    if(chosenElevator.transform.position == chosenElevator.GetComponent<AutomaticMovement>().wp[personFloor - 1].transform.position)
+                    {   
+                        Debug.Log("Followed the Person");
+                        GameObject door = chosenElevator.GetComponent<AutomaticMovement>().door;
+                        Door script = door.GetComponent<Door>();
+                        script.doorOpen = 1;
+                    }
                 }
-                if (personDelivered) GetComponent<AutomaticMovement>().enabled = true;
+                
 
-                if (Input.GetKey("x"))
-                {
-                    personRequest = !personRequest;
-                }
-                if (Input.GetKey(KeyCode.UpArrow))
-                {
-                    personRequestDirection = 1;
-                }
-                if (Input.GetKey(KeyCode.DownArrow))
-                {
-                    personRequestDirection = 0;
-                }
 
-                try
+                if(personRequest == true && doneRequesting == false)
                 {
-                    Debug.Log("random");
+                    chosenElevator = elevators[GetNearestElevator(personFloor)];
+                    AutomaticMovement chosen = chosenElevator.GetComponent<AutomaticMovement>();
+
+                    if (personRequest && !chosen.isFull && doneRequesting == false)
+                    {
+                        chosen.enabled = false;
+                        doneRequesting = true;
+                    }
+                    else
+                    {
+
+                    }
+                    if (personDelivered) GetComponent<AutomaticMovement>().enabled = true;
+
+                    if (Input.GetKey("x"))
+                    {
+                        personRequest = !personRequest;
+                    }
+                    if (Input.GetKey(KeyCode.UpArrow))
+                    {
+                        personRequestDirection = 1;
+                    }
+                    if (Input.GetKey(KeyCode.DownArrow))
+                    {
+                        personRequestDirection = 0;
+                    }
+                }
+                
+
+                // try
+                // {
+                //     Debug.Log("random");
 
                     ////Data to Arduino (inside)
                     //Debug.Log(stream2.ReadLine());
@@ -124,46 +144,94 @@ public class ElevatorManager : MonoBehaviour
                     //}
 
                     //Data from Arduino (outside)
-                    string value2 = stream.ReadLine();
-                    if (value2 == "!")  
-                    {
-                        data = 0;
-                    }
-                    if (value2 == "<")
-                    {
-                        data = 1;
-                        stream.Write(data.ToString()); 
-                    }
-                    if (value2 == ">")
-                    {
-                        data = 2;
-                        stream.Write(data.ToString());
-                    }
-                }
-                catch (System.Exception)
-                {
-                    Debug.Log("Error");
-                }
-            }
-        }        
+        //             string value2 = stream.ReadLine();
+        //             if (value2 == "!")  
+        //             {
+        //                 data = 0;
+        //             }
+        //             if (value2 == "<")
+        //             {
+        //                 data = 1;
+        //                 stream.Write(data.ToString()); 
+        //             }
+        //             if (value2 == ">")
+        //             {
+        //                 data = 2;
+        //                 stream.Write(data.ToString());
+        //             }
+        //         }
+        //         catch (System.Exception)
+        //         {
+        //             Debug.Log("Error");
+        //         }
+        //     }
+        // }        
     }
 
+    IEnumerator MoveElevator(GameObject floor){
+        Debug.Log("MOVING");
+        yield return new WaitForSeconds(6);
+    }
     int GetNearestElevator(int personFloor)
     {
-        //TODO: Compare floors each elevator. PersonFloor -ElevatorFloor . Abs(). Assume lowest value is nearestElevator.        
-        temp = personFloor - elevators[0].GetComponent<AutomaticMovement>().moveCounter;
-        for (int i = 1; i < elevators.Length; i++)
-        {
-            if(temp < elevators[i].GetComponent<AutomaticMovement>().moveCounter)
+        int nearestElevator = elevators.Length;
+        //  = personFloor - elevators[0].GetComponent<AutomaticMovement>().moveCounter;
+        //TODO: Compare floors each elevator. PersonFloor -ElevatorFloor . Abs(). Assume lowest value is nearestElevator.       
+        int tmpMax = 5;
+    
+        if(personFloor == 5) {
+            for (int i = 0; i < elevators.Length; i++)
             {
-                temp = Mathf.Abs(elevators[i].GetComponent<AutomaticMovement>().moveCounter - personFloor);
-            }
+                GameObject currentElevator = elevators[i];
+                AutomaticMovement movement = currentElevator.GetComponent<AutomaticMovement>();
+                
+                int direction = movement.isUp;
+                int movementNew = movement.moveCounter + 1;
 
-            if(temp >= elevators.Length)
+                int abs = Mathf.Abs(movementNew - personFloor);  
+                             
+                if(abs < tmpMax && direction == 1)
+                {
+                    nearestElevator = i;
+                    Debug.Log(nearestElevator);
+                }
+            }
+        } else if (personFloor == 1){
+            for (int i = 0; i < elevators.Length; i++)
             {
-                temp = elevators.Length-1;
+                GameObject currentElevator = elevators[i];
+                AutomaticMovement movement = currentElevator.GetComponent<AutomaticMovement>();
+                
+                int direction = movement.isUp;
+                int movementNew = movement.moveCounter + 1;
+
+                int abs = Mathf.Abs(movementNew - personFloor);  
+                             
+                if(abs < tmpMax && direction == 0)
+                {
+                    nearestElevator = i;
+                    Debug.Log(nearestElevator);
+                }
+            }
+        } else {
+            for (int i = 0; i < elevators.Length; i++)
+            {
+                GameObject currentElevator = elevators[i];
+                AutomaticMovement movement = currentElevator.GetComponent<AutomaticMovement>();
+                
+                int movementNew = movement.moveCounter + 1;
+
+                int abs = Mathf.Abs(movementNew - personFloor);  
+                             
+                if(abs < tmpMax)
+                {
+                    nearestElevator = i;
+                    Debug.Log(nearestElevator);
+                }
             }
         }
-        return Mathf.Abs(temp);
+
+        Debug.Log("RETURNED VALUE" + nearestElevator);
+        return Mathf.Abs(nearestElevator);
     }
 }

@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class AutomaticMovement : MonoBehaviour
-{
+{   
+    public int globalWaitTime = 1; 
     public GameObject[] wp;
     public GameObject door;
     public Text liftCurrent;
     public int current = 0;
     public int moveCounter = 0;
-    public bool isFull = true;
+    public bool isFull = false;
     public bool[] floorRequests;
     public int passengers = 0;
 
@@ -23,7 +24,7 @@ public class AutomaticMovement : MonoBehaviour
     public bool isMoving = true;
     bool isOpen = true;
 
-    Door doorScript;
+    public Door doorScript;
     ElevatorManager manager;
 
     void Start()
@@ -32,10 +33,9 @@ public class AutomaticMovement : MonoBehaviour
         manager = GetComponent<ElevatorManager>();
         isUp = 1;
         movingTowards = wp[moveCounter];
-        // floorRequests = new bool[wp.Length];
+        floorRequests = new bool[wp.Length];
         passengers = Random.Range(0,11);
-        // GenerateRandomFloors();
-        isFull = true;
+        GenerateRandomFloors();
     }
     // Update is called once per frame
     void Update()
@@ -74,7 +74,7 @@ public class AutomaticMovement : MonoBehaviour
                 }
             } else {
                 // STOP and WaitForPassengers
-                StartCoroutine(WaitForPassengers());
+                // StartCoroutine(WaitForPassengers());
             }
         }
         else if(!isMoving)
@@ -116,13 +116,11 @@ public class AutomaticMovement : MonoBehaviour
         if (passengers == 9)
         {
             liftCurrent.text = "Lift passenger #: Full";
-            // manager.isFull = true;
             isFull =     true;
         }
         else if (passengers > 9)
         {
             liftCurrent.text = "Lift passenger #: Overloaded";
-            // manager.isFull = true;
             isFull = true;
         }
         else
