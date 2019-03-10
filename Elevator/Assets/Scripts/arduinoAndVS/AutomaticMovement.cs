@@ -31,12 +31,13 @@ public class AutomaticMovement : MonoBehaviour
     {
         doorScript = door.GetComponent<Door>();
         manager = GetComponent<ElevatorManager>();
-        isUp = 1;
+        isUp = 1; 
         movingTowards = wp[moveCounter];
         floorRequests = new bool[wp.Length];
         passengers = Random.Range(0,11);
         GenerateRandomFloors();
     }
+
     // Update is called once per frame
     void Update()
     {
@@ -61,32 +62,38 @@ public class AutomaticMovement : MonoBehaviour
                 if(!isFull){
                     transform.position = Vector3.MoveTowards(transform.position, movingTowards.transform.position, Time.deltaTime * speed);
                     StartCoroutine(Wait());
+                    
                 }
-                else if(isFull) {
+                else if(isFull)
+                {
                     transform.position = Vector3.MoveTowards(transform.position, movingTowards.transform.position, Time.deltaTime * speed);
 
-                    if(transform.position == movingTowards.transform.position){
+                    if(transform.position == movingTowards.transform.position)
+                    {
                         floorRequests[moveCounter] = false;
                         StartCoroutine(WaitForTime(4));
-                    } else {
-                        StartCoroutine(DeliverPassengersUntilEmpty());
                     }
+                    else
+                    {
+                        StartCoroutine(DeliverPassengersUntilEmpty());                        
+                    }                    
                 }
-            } else {
+            }
+            else
+            {
                 // STOP and WaitForPassengers
                 // StartCoroutine(WaitForPassengers());
             }
         }
-        else if(!isMoving)
+        else
         {
-            if(isOpen)
-            {
-                DoorOpen();
-            }
+            StartCoroutine(DoorOpen());
+            isMoving = true;
         }
     }
 
-    IEnumerator WaitForPassengers(){
+    IEnumerator WaitForPassengers()
+    {
         int seconds = Random.Range(5, 10);
 
         Debug.Log("Elevator is Resting and Waiting For Passengers for " + seconds);
@@ -94,6 +101,7 @@ public class AutomaticMovement : MonoBehaviour
 
         passengers = Random.Range(10, 20);
         GenerateRandomFloors();
+        isMoving = false;
         StopAllCoroutines();
     }
 
@@ -101,11 +109,14 @@ public class AutomaticMovement : MonoBehaviour
     {
         if(passengers == 0)
         {
-            yield return new WaitForSeconds(7);
             doorScript.doorOpen = 3;
+            yield return new WaitForSeconds(5);
+            doorScript.doorOpen = 1;
+            GenerateRandomFloors();
+            passengers = Random.Range(0, 10);
+
         }
 
-        yield return new WaitForSeconds(2);
         if(isMoving)
         {
             doorScript.doorOpen = 3;
@@ -116,12 +127,16 @@ public class AutomaticMovement : MonoBehaviour
         if (passengers == 9)
         {
             liftCurrent.text = "Lift passenger #: Full";
-            isFull =     true;
+            isFull = true;
+            isMoving = true;
         }
         else if (passengers > 9)
         {
             liftCurrent.text = "Lift passenger #: Overloaded";
             isFull = true;
+            isMoving = false;
+            passengers = 9;
+            StartCoroutine(DoorOpen());
         }
         else
         {
@@ -129,16 +144,9 @@ public class AutomaticMovement : MonoBehaviour
         }
 
         yield return new WaitForSeconds(2);
+
         passengers = Random.Range(0,10);
         GenerateRandomFloors();
-
-        if(passengers > 9)
-        {
-            doorScript.doorOpen = 1;
-            yield return new WaitForSeconds(2);
-            passengers = 9;
-            doorScript.doorOpen = 2;
-        }
 
         if (isUp == 1)
         {
@@ -154,17 +162,21 @@ public class AutomaticMovement : MonoBehaviour
             }
         }
 
-        isMoving = true;
+        isMoving = false;
         movingTowards = wp[moveCounter];
 
         StopAllCoroutines();
     }
 
+
     public IEnumerator DoorOpen()
     {
         doorScript.doorOpen = 1;
-        yield return new WaitForSeconds(4);
+        yield return new WaitForSeconds(2);
+        doorScript.doorOpen = 2;
+        yield return new WaitForSeconds(2);        
     }
+
 
     //TODO: retain floors after changing floors
     void GenerateRandomFloors()
@@ -208,10 +220,11 @@ public class AutomaticMovement : MonoBehaviour
         }
     }
 
+
     public IEnumerator DeliverPassengersUntilEmpty()
     {   // TODO: Loop each FloorRequests, if true, moveTowards wp[floorReqwuestIndex]
         StopAllCoroutines();
-        Debug.Log("DELIVERING");
+        //Debug.Log("DELIVERING");
         for(int i = 0; i < wp.Length; i++)
         {
             if(floorRequests[i] == true)
@@ -220,16 +233,16 @@ public class AutomaticMovement : MonoBehaviour
                 break;
             }
         }
-        Debug.Log(moveCounter);
+        //Debug.Log(moveCounter);
         movingTowards = wp[moveCounter];
-
-
+        isMoving = true;
         yield return new WaitForSeconds(2);
     }
 
 
-    IEnumerator WaitForTime(int s){
+    IEnumerator WaitForTime(int s)
+    {
         yield return new WaitForSeconds(s);
-        StartCoroutine(DeliverPassengersUntilEmpty());
+        StartCoroutine(DeliverPassengersUntilEmpty());        
     }
 }

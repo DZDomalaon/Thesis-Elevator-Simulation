@@ -5,14 +5,14 @@ using System.IO.Ports;
 
 public class ElevatorManager : MonoBehaviour
 {
-    SerialPort stream = new SerialPort("COM5", 9600);
-    //SerialPort stream2 = new SerialPort("COM2", 9600, Parity.None, 8, StopBits.One);
+    SerialPort stream = new SerialPort("COM7", 9600);
 
     public bool shouldDoorOpen;
+    public bool isInside = true ;
     public bool isFull;
     public GameObject chosenElevator;
     public bool doneRequesting = false;
-
+   
     float speed = 8;
 
     public int personFloor;
@@ -26,6 +26,7 @@ public class ElevatorManager : MonoBehaviour
     int[] requestedFloors;
 
     int data;
+    int value;
 
     void Start()
     {
@@ -34,149 +35,169 @@ public class ElevatorManager : MonoBehaviour
     }
 
     void Update()
-    {
-        // if(stream != null)
-        // {
-        //     if(stream.IsOpen)
-        //     {
-                personFloor = GameObject.FindWithTag("Player").GetComponent<PlayerScript>().currentFloor;
-                stream.Write(personFloor.ToString());
-                
-                if(chosenElevator){
-                    chosenElevator.transform.position = Vector3.MoveTowards(chosenElevator.transform.position, chosenElevator.GetComponent<AutomaticMovement>().wp[personFloor - 1].transform.position, Time.deltaTime * speed);
-                    if(chosenElevator.transform.position == chosenElevator.GetComponent<AutomaticMovement>().wp[personFloor - 1].transform.position)
-                    {   
-                        Debug.Log("Followed the Person");
-                        GameObject door = chosenElevator.GetComponent<AutomaticMovement>().door;
-                        Door script = door.GetComponent<Door>();
-                        script.doorOpen = 1;
-                    }
-                }
-                
+    {        
+        personFloor = GameObject.FindWithTag("Player").GetComponent<PlayerScript>().currentFloor;        
+
+        if (chosenElevator)
+        {
+            chosenElevator.transform.position = Vector3.MoveTowards(chosenElevator.transform.position, chosenElevator.GetComponent<AutomaticMovement>().wp[personFloor - 1].transform.position, Time.deltaTime * speed);
+            if (chosenElevator.transform.position == chosenElevator.GetComponent<AutomaticMovement>().wp[personFloor - 1].transform.position)
+            {
+                Debug.Log("Followed the Person");
+                GameObject door = chosenElevator.GetComponent<AutomaticMovement>().door;
+                Door script = door.GetComponent<Door>();
+                script.doorOpen = 1;
+            }
+        }
 
 
-                if(personRequest == true && doneRequesting == false)
+        if (personRequest == true && doneRequesting == false)
+        {
+            chosenElevator = elevators[GetNearestElevator(personFloor)];
+            AutomaticMovement chosen = chosenElevator.GetComponent<AutomaticMovement>();
+
+            if (personRequest && !chosen.isFull && doneRequesting == false)
+            {
+                chosen.enabled = false;
+                doneRequesting = true;
+            }            
+
+            if (personDelivered)
+            {
+                GetComponent<AutomaticMovement>().enabled = true;
+            }
+        }
+
+
+        if (stream != null)
+        {            
+            Debug.Log(stream.IsOpen);
+            if (stream.IsOpen)
+            {                
+                try
                 {
-                    chosenElevator = elevators[GetNearestElevator(personFloor)];
-                    AutomaticMovement chosen = chosenElevator.GetComponent<AutomaticMovement>();
+                    if (isInside == true)
+                    {
+                        if (chosenElevator.GetComponent<AutomaticMovement>().moveCounter == 1 && chosenElevator.GetComponent<AutomaticMovement>().isUp == 1)
+                        {
+                            stream.Write("a");
+                        }
+                        if (chosenElevator.GetComponent<AutomaticMovement>().moveCounter == 2 && chosenElevator.GetComponent<AutomaticMovement>().isUp == 1)
+                        {
+                            stream.Write("b");
+                        }
+                        if (chosenElevator.GetComponent<AutomaticMovement>().moveCounter == 2 && chosenElevator.GetComponent<AutomaticMovement>().isUp == 2)
+                        {
+                            stream.Write("c");
+                        }
+                        if (chosenElevator.GetComponent<AutomaticMovement>().moveCounter == 3 && chosenElevator.GetComponent<AutomaticMovement>().isUp == 1)
+                        {
+                            stream.Write("d");
+                        }
+                        if (chosenElevator.GetComponent<AutomaticMovement>().moveCounter == 3 && chosenElevator.GetComponent<AutomaticMovement>().isUp == 2)
+                        {
+                            stream.Write("e");
+                        }
+                        if (chosenElevator.GetComponent<AutomaticMovement>().moveCounter == 4 && chosenElevator.GetComponent<AutomaticMovement>().isUp == 1)
+                        {
+                            stream.Write("f");
+                        }
+                        if (chosenElevator.GetComponent<AutomaticMovement>().moveCounter == 4 && chosenElevator.GetComponent<AutomaticMovement>().isUp == 2)
+                        {
+                            stream.Write("g");
+                        }
+                        if (chosenElevator.GetComponent<AutomaticMovement>().moveCounter == 5 && chosenElevator.GetComponent<AutomaticMovement>().isUp == 2)
+                        {
+                            stream.Write("h");
+                        }
 
-                    if (personRequest && !chosen.isFull && doneRequesting == false)
-                    {
-                        chosen.enabled = false;
-                        doneRequesting = true;
+                        value = stream.ReadByte();
+                        if (value == 6)
+                        {
+                            data = 6;
+                            Debug.Log("OPEN");
+                        }
+                        if (value == 9)
+                        {
+                            data = 9;
+                            Debug.Log("CLOSE");
+                        }
+                        else
+                        {
+                            var val = value.ToString();
+                            var arr = val.ToCharArray();
+                            for (int i=0; i<arr.Length; i++)
+                            {
+                                Debug.Log(arr[i]);
+                            }
+                        }
                     }
-                    else
-                    {
 
-                    }
-                    if (personDelivered) GetComponent<AutomaticMovement>().enabled = true;
+                    if (isInside == false)
+                    {
+                        stream.Write(personFloor.ToString());
+                        if (personFloor == 1)
+                        {
+                            stream.Write("1");
+                        }
+                        if (personFloor == 2)
+                        {
+                            stream.Write("2");
+                        }
+                        if (personFloor == 3)
+                        {
+                            stream.Write("3");
+                        }
+                        if (personFloor == 4)
+                        {
+                            stream.Write("4");
+                        }
+                        if (personFloor == 5)
+                        {
+                            stream.Write("5");
+                        }
 
-                    if (Input.GetKey("x"))
-                    {
-                        personRequest = !personRequest;
-                    }
-                    if (Input.GetKey(KeyCode.UpArrow))
-                    {
-                        personRequestDirection = 1;
-                    }
-                    if (Input.GetKey(KeyCode.DownArrow))
-                    {
-                        personRequestDirection = 0;
+                        value = stream.ReadByte();
+                        if (value == 12)
+                        {
+                            data = 12;
+                            Debug.Log("UP/DOWN");
+                        }
+                        if (value == 1)
+                        {
+                            data = 1;
+                            Debug.Log("UP");
+                        }
+                        if (value == 1)
+                        {
+                            data = 2;
+                            Debug.Log("DOWN");
+                        }
                     }
                 }
-                
-
-                // try
-                // {
-                //     Debug.Log("random");
-
-                    ////Data to Arduino (inside)
-                    //Debug.Log(stream2.ReadLine());
-                    //if (chosen.current == 1 && chosen.isUp == 1)
-                    //{
-                    //    stream2.Write("a");
-                    //}
-                    //if (chosen.current == 2 && chosen.isUp == 1)
-                    //{
-                    //    stream2.Write("b");
-                    //}
-                    //if (chosen.current == 2 && chosen.isUp == 2)
-                    //{
-                    //    stream2.Write("c");
-                    //}
-                    //if (chosen.current == 3 && chosen.isUp == 1)
-                    //{
-                    //    stream2.Write("d");
-                    //}
-                    //if (chosen.current == 3 && chosen.isUp == 2)
-                    //{
-                    //    stream2.Write("e");
-                    //}
-                    //if (chosen.current == 4 && chosen.isUp == 1)
-                    //{
-                    //    stream2.Write("f");
-                    //}
-                    //if (chosen.current == 4 && chosen.isUp == 2)
-                    //{
-                    //    stream2.Write("g");
-                    //}
-                    //if (chosen.current == 5 && chosen.isUp == 2)
-                    //{
-                    //    stream2.Write("h");
-                    //}
-
-                    ////Data from Arduino (inside)
-                    //string value = stream.ReadLine();
-                    //if (value == "12")
-                    //{
-                    //    data = 12;
-                    //    Debug.Log("UPDOWN");
-                    //}
-                    //if (value == "1")
-                    //{
-                    //    data = 1;
-                    //    Debug.Log("UP");
-                    //}
-                    //if (value == "2")
-                    //{
-                    //    data = 2;
-                    //    Debug.Log("DOWN");
-                    //}
-
-                    //Data from Arduino (outside)
-        //             string value2 = stream.ReadLine();
-        //             if (value2 == "!")  
-        //             {
-        //                 data = 0;
-        //             }
-        //             if (value2 == "<")
-        //             {
-        //                 data = 1;
-        //                 stream.Write(data.ToString()); 
-        //             }
-        //             if (value2 == ">")
-        //             {
-        //                 data = 2;
-        //                 stream.Write(data.ToString());
-        //             }
-        //         }
-        //         catch (System.Exception)
-        //         {
-        //             Debug.Log("Error");
-        //         }
-        //     }
-        // }        
+                catch (System.Exception)
+                {
+                    Debug.Log("Error");
+                }
+            }    
+            else
+            {
+                stream.Open();
+            }
+        }     
     }
 
-    IEnumerator MoveElevator(GameObject floor){
+
+    IEnumerator MoveElevator(GameObject floor)
+    {
         Debug.Log("MOVING");
         yield return new WaitForSeconds(6);
     }
+
+
     int GetNearestElevator(int personFloor)
     {
-        int nearestElevator = elevators.Length;
-        //  = personFloor - elevators[0].GetComponent<AutomaticMovement>().moveCounter;
-        //TODO: Compare floors each elevator. PersonFloor -ElevatorFloor . Abs(). Assume lowest value is nearestElevator.       
+        int nearestElevator = elevators.Length;      
         int tmpMax = 5;
     
         if(personFloor == 5) {
@@ -196,7 +217,9 @@ public class ElevatorManager : MonoBehaviour
                     Debug.Log(nearestElevator);
                 }
             }
-        } else if (personFloor == 1){
+        }
+        else if (personFloor == 1)
+        {
             for (int i = 0; i < elevators.Length; i++)
             {
                 GameObject currentElevator = elevators[i];
@@ -213,7 +236,9 @@ public class ElevatorManager : MonoBehaviour
                     Debug.Log(nearestElevator);
                 }
             }
-        } else {
+        }
+        else
+        {
             for (int i = 0; i < elevators.Length; i++)
             {
                 GameObject currentElevator = elevators[i];
@@ -229,9 +254,7 @@ public class ElevatorManager : MonoBehaviour
                     Debug.Log(nearestElevator);
                 }
             }
-        }
-
-        Debug.Log("RETURNED VALUE" + nearestElevator);
+        }        
         return Mathf.Abs(nearestElevator);
     }
 }

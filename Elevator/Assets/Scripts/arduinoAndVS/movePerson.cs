@@ -6,45 +6,48 @@ using UnityEngine;
 public class movePerson : MonoBehaviour
 {
 
-    public float speed = 4;
-    public float rotSpeed = 20;
-    public float rot = 0f;
-    public float gravity = 20.0f;
-    Animator anim;
+    public float speed;
+    //public float rot = 0F;
+    //public float gravity = 8;
+    //public float rotateSpeed = 80;
 
-    Vector3 moveDir = Vector3.zero;
-
-    private Vector3 moveDirection = Vector3.zero;
-    private CharacterController controller;
-
+    //private Vector3 moveDirection = Vector3.zero;
+    //CharacterController controller;
+    //Animator anim;
+    // Use this for initialization
     void Start()
     {
-        controller = GetComponent<CharacterController>();
-        anim = GetComponent<Animator>();
+        speed = 7f;
+        //controller = GetComponent<CharacterController>();
+       // anim = GetComponent<Animator>();
 
-        // let the gameObject fall down
-        gameObject.transform.position = new Vector3(0, 5, 0);
     }
 
+    // Update is called once per frame
     void Update()
     {
-        if (controller.isGrounded)
-        {
-            // We are grounded, so recalculate
-            // move direction directly from axes
-            if(Input.GetKey (KeyCode.W))
-            {
-                anim.SetInteger("condition", 1);
-            }
-            if(Input.GetKeyUp(KeyCode.W))
-            {
-                anim.SetInteger("condition", 0);
-            }            
-        }
+        transform.Translate(speed * Input.GetAxis("Horizontal") * Time.deltaTime, 0f, speed * Input.GetAxis("Vertical") * Time.deltaTime);
+        //Debug.Log(controller.isGrounded);
+        //if (controller.isGrounded)
+        //{
+        //    if(Input.GetKey(KeyCode.W))
+        //    {
+        //       // anim.SetInteger("Condition", 1);
+        //        moveDirection = new Vector3(0, 0, 1);
+        //        moveDirection *= speed;
+        //        moveDirection = transform.TransformDirection(moveDirection);
+        //    }
+            
+        //    if(Input.GetKeyUp(KeyCode.W))
+        //    {
+        //        //anim.SetInteger("Condition", 0);
+        //        moveDirection = new Vector3(0, 0, 0);
+        //    }
+        //}
+        //rot += Input.GetAxis("Horizontal") * rotateSpeed * Time.deltaTime; ;
+        //transform.eulerAngles = new Vector3(0, rot, 0);
 
-        rot += Input.GetAxis("Horizontal") * rotSpeed * Time.deltaTime;
-        transform.eulerAngles = new Vector3(0, rot, 0);
-        moveDirection.y = moveDirection.y - (gravity * Time.deltaTime);
-        controller.Move(moveDirection * Time.deltaTime);
+        //moveDirection.y -= gravity * Time.deltaTime;
+        //controller.Move(moveDirection * Time.deltaTime);  
     }
 }
